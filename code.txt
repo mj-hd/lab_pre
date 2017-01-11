@@ -1,0 +1,6 @@
+(abc)3
+b10
+abc(DEF)2ghi
+abcdeF5ghi
+a(B(cd3e)2F(gh)3i)2jk
+a(b(c(d(e(f(g)1)2)3)4)5)6
