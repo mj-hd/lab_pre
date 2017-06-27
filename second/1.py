@@ -1,8 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# 距離は、上下左右方向にのみ定義されるものとする
-
 from math import floor, sqrt, hypot
 
 # 最大公約数を求める関数
