@@ -30,7 +30,7 @@ class Matrix:
         for y in range(self.height):
             result += " [ "
             for x in range(self.width):
-                result += "%d " % self[x, y]
+                result += str(self[x, y]) + " "
             result += "]\n"
 
         return result
@@ -86,44 +86,75 @@ class Matrix:
         if self.width != self.height:
             raise NotImplemented()
 
+        # result matrix
+        result = Matrix(self.width, self.height)
+
+        # lu decomposition matrices
         a = Matrix(self.width, self.height)
         l = Matrix(self.width, self.height)
         u = Matrix(self.width, self.height)
 
+        # copy items from self to a
         for y in range(self.height):
             for x in range(self.width):
-                a[x, y] = self[x, y]
+                a[x, y] = float(self[x, y])
 
+        # lu decomposition
+        # http://qiita.com/edo_m18/items/1d67532bed4a083cddb3
         for i in range(self.height):
             lv = Matrix(1, self.height - i - 1)
             uv = Matrix(self.width - i - 1, 1)
 
-            u[i, i] = 1
+            u[i, i] = 1.
 
-            # orange
+            # l0_0
             pivod = a[i, i]
             l[i, i] = pivod
 
-            # red
+            # l1
             for j in range(i + 1, self.height):
                 l[i, j] = a[i, j]
                 lv[0, j - i - 1] = l[i, j]
 
-            # blue
+            # ->u1^T
             for j in range(i + 1, self.width):
                 u[j, i] = a[j, i] / pivod
                 uv[j - i - 1, 0] = u[j, i]
 
-            # green
+            # lu
             lu = lv * uv
+
+            # a
             for x in range(i + 1, self.width):
                 for y in range(i + 1, self.height):
                     a[x, y] = a[x, y] - lu[x - i - 1, y - i - 1]
 
+        # calculate each column of result
         for n in range(self.width):
-            s = 0
+            x = [0] * self.height # solution
+            y = [0] * self.height
+
+            # y
             for i in range(self.height):
-                y = ((i == n ? 1 : 0) - s) / l[i, i]
+                s = 0.
+                for j in range(i + 1):
+                    s += l[j, i] * y[j]
+
+                y[i] = ((1. if i == n else 0.) - s) / l[i, i]
+            
+            # x
+            for i in range(self.width - 1, -1, -1):
+                s = 0.
+                for j in range(i + 1, self.width):
+                    s += u[j, i] * x[j]
+
+                x[i] = y[i] - s
+
+            # copy result
+            for i in range(self.height):
+                result[n, i] = x[i]
+
+        return result
 
 a = Matrix(4, 4)
 
